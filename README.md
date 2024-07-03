@@ -18,3 +18,22 @@ git clone https://github.com/yourusername/book-app.git
 cd book-app
 ```
 
+## Front-end Setup
+npm
+```
+cd front-app
+npm install
+npm build / npm run dev
+```
+
+## Back-end Setup
+```
+cd ../back-app
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+you also need to restore databases on MongoDB
+Good Luck :)
