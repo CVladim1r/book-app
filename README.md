@@ -12,7 +12,9 @@ Ensure you have the following installed:
 Clone the Repository
 
 sh
-shell```
+shell
+```
 git clone https://github.com/yourusername/book-app.git
 cd book-app
 ```
+
