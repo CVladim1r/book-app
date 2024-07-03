@@ -1,4 +1,3 @@
-// src/app/page.tsx
 'use client'
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
@@ -45,8 +44,8 @@ const IndexPage = () => {
       }
 
       await createBook(formData);
-      fetchBooks(page); // Обновляем список книг после создания новой книги
-      setShowForm(false); // Закрываем форму после успешного создания
+      fetchBooks(page);
+      setShowForm(false);
     } catch (error) {
       console.error('Ошибка при создании книги:', error);
     }
