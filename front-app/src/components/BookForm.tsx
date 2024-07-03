@@ -1,23 +1,25 @@
-// components/BookForm.tsx
 import React, { useState } from 'react';
 
 interface BookFormProps {
-  onCreate: (book: { title: string; description: string; cover: string }) => void;
+  onSubmit: (dataCheck: [string, string, File | null]) => void;
   onClose: () => void;
 }
 
-const BookForm: React.FC<BookFormProps> = ({ onCreate, onClose }) => {
+const BookForm: React.FC<BookFormProps> = ({ onSubmit, onClose }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [cover, setCover] = useState('');
+  const [cover, setCover] = useState<File | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onCreate({ title, description, cover });
-    setTitle('');
-    setDescription('');
-    setCover('');
-    onClose(); // Закрыть окно после создания книги
+
+    if (!title || !description || !cover) {
+      console.error('Название, описание или обложка не заполнены.');
+      return;
+    }
+
+    const dataCheck: [string, string, File | null] = [title, description, cover];
+    onSubmit(dataCheck);
   };
 
   return (
@@ -43,11 +45,15 @@ const BookForm: React.FC<BookFormProps> = ({ onCreate, onClose }) => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Обложка (URL)</label>
+            <label className="block text-sm font-medium text-gray-700">Обложка (файл)</label>
             <input
-              type="text"
-              value={cover}
-              onChange={(e) => setCover(e.target.value)}
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setCover(file);
+                }
+              }}
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm p-2"
             />
           </div>

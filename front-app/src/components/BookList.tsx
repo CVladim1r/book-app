@@ -1,31 +1,23 @@
-// components/BookList.tsx
-import React, { memo } from 'react';
-
-interface Book {
-  id: number;
-  title: string;
-  description: string;
-  cover: string;
-}
+// src/components/BookList.tsx
+import React from 'react';
+import { Book } from '../types';
 
 interface BookListProps {
   books: Book[];
 }
 
-const BookList: React.FC<BookListProps> = memo(({ books }) => {
+const BookList: React.FC<BookListProps> = ({ books }) => {
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <ul>
       {books.map(book => (
-        <div key={book.id} className="p-4 border rounded-lg shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
-          <img src={book.cover} alt={book.title} className="w-full h-48 object-cover rounded-t-lg mb-4" />
-          <div className="p-4">
-            <h2 className="text-lg font-semibold mb-2 text-black">{book.title}</h2>
-            <p className="text-gray-600 text-sm">{book.description}</p>
-          </div>
-        </div>
+        <li key={book._id}>
+          <h3>{book.title}</h3>
+          <p>{book.description}</p>
+          {book.cover_filename && <img src={`http://localhost:8000/api/covers/${book.cover_filename}`} alt={book.title} />}
+        </li>
       ))}
-    </div>
+    </ul>
   );
-});
+};
 
 export default BookList;

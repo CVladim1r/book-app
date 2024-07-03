@@ -1,31 +1,56 @@
-'use client';
-
-import { useState, useEffect, useCallback } from 'react';
-import BookList from '../components/BookList';
-import BookForm from '../components/BookForm';
-import { useRouter } from 'next/navigation';
+// src/app/page.tsx
+'use client'
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { getBooks, createBook } from '../api';
+import { Book } from '../types';
+
+const BookList = dynamic(() => import('../components/BookList'), { ssr: false });
+const BookForm = dynamic(() => import('../components/BookForm'), { ssr: false });
 
 const IndexPage = () => {
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [page, setPage] = useState(1);
   const booksPerPage = 5;
 
-  const fetchBooks = async (page: number) => {
-    const data = await getBooks(page, booksPerPage);
-    setBooks(data);
+  const fetchBooks = async (pageNum: number) => {
+    try {
+      const data = await getBooks(pageNum, booksPerPage);
+      setBooks(data);
+    } catch (error) {
+      console.error('Ошибка при получении списка книг:', error);
+    }
   };
 
   useEffect(() => {
     fetchBooks(page);
   }, [page]);
 
-  const handleCreate = useCallback(async (book: { title: string; description: string; cover: string }) => {
-    await createBook(book);
-    fetchBooks(page);
-    setShowForm(false);
-  }, [page]);
+  const handleCreate = async (dataCheck: [string, string, File | null]) => {
+    const [title, description, cover] = dataCheck;
+
+    try {
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      if (cover) {
+        formData.append('cover', cover);
+      }
+
+      console.log('DataCheck:', dataCheck);
+      console.log('FormData entries:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+      }
+
+      await createBook(formData);
+      fetchBooks(page); // Обновляем список книг после создания новой книги
+      setShowForm(false); // Закрываем форму после успешного создания
+    } catch (error) {
+      console.error('Ошибка при создании книги:', error);
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -55,7 +80,7 @@ const IndexPage = () => {
           Вперед
         </button>
       </div>
-      {showForm && <BookForm onCreate={handleCreate} onClose={() => setShowForm(false)} />}
+      {showForm && <BookForm onSubmit={handleCreate} onClose={() => setShowForm(false)} />}
     </div>
   );
 };
